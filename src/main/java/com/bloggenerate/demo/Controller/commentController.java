@@ -18,8 +18,8 @@ public class commentController {
 
     @PostMapping("/saveComment")
 //    public Comment saveComment(@RequestBody(required = false) Comment comment, @RequestParam("userId") Long userId, @RequestParam("blogId") int blogId){
-    public CommentDTO saveComment(@RequestBody(required = false) Comment comment, @RequestParam("userId") Long userId, @RequestParam("blogId") int blogId){
-          return commentService.saveComment(comment, userId, blogId);
+    public CommentDTO saveComment(@RequestBody Comment comment, @RequestParam("userId") Long userId, @RequestParam("blogId") int blogId,@RequestParam(required = false) Integer parentId){
+          return commentService.saveComment(comment, userId, blogId,parentId);
     }
 
 
@@ -42,7 +42,7 @@ public class commentController {
     @GetMapping("/comment/{commentId}")
     public CommentDTO getCommentById(@PathVariable("commentId") int commentId){
         return commentService.getCommentById(commentId);
-
     }
+
 
 }

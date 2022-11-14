@@ -1,6 +1,8 @@
 package com.bloggenerate.demo.Entity;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Comment {
@@ -10,9 +12,11 @@ public class Comment {
     private int commentId;
     private String comments;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    private Set<Comment> commentReply;
 
     public int getCommentId() {
         return commentId;
@@ -36,5 +40,24 @@ public class Comment {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Set<Comment> getCommentReply() {
+        return commentReply;
+    }
+
+    public void setCommentReply(Set<Comment> commentReply) {
+        this.commentReply = commentReply;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "commentId=" + commentId +
+                ", comments='" + comments + '\'' +
+                ", user=" + user +
+                ", commentReply=" + commentReply +
+                '}';
     }
 }

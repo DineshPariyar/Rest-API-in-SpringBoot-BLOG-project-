@@ -9,9 +9,7 @@ import com.bloggenerate.demo.Repository.CommentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -25,7 +23,8 @@ public class CommentServiceImpl implements CommentService {
 
     public List<CommentDTO> getAllComment() {
 
-        List<Comment> comments = commentRepo.findAll();
+//        List<Comment> comments = commentRepo.findAll();
+        List<Comment> comments = commentRepo.getAllComments();
         List<CommentDTO> cmtDTO = new ArrayList<>();
         for (Comment cmt : comments) {
             CommentDTO commentDTO = convertEntityToDto(cmt);
@@ -39,37 +38,64 @@ public class CommentServiceImpl implements CommentService {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setCommentId(comment.getCommentId());
         commentDTO.setComments(comment.getComments());
+        System.out.println("comment id of " + comment.getCommentId() + " checking child");
+        if (comment.getCommentReply() != null && !comment.getCommentReply().isEmpty()) {
+            Set<CommentDTO> commentReplyDTOS = new HashSet<>();
+            for (Comment comment1 : comment.getCommentReply()) {
+
+                commentReplyDTOS.add(convertEntityToDto(comment1));
+            }
+            commentDTO.setReplys(commentReplyDTOS);
+
+        }
         return commentDTO;
     }
 
 
     @Override
-    public CommentDTO saveComment(Comment comment, long userId, int blogId) {
+    public CommentDTO saveComment(Comment comment, long userId, int blogId, Integer parentId) {
         User user = userService.findUserByID(userId);
-        Blog blog = blogService.getSingleBlog(blogId);
 
         comment.setUser(user);
         Comment cmt = commentRepo.save(comment);
-        List<Comment> commentList = blog.getComment();
-        commentList.add(comment);
-        blogService.saveBlog(blog);
+
+
+        if (parentId != null) {
+            Comment parent = commentRepo.findById(parentId).get();//parent object get gareko through id.
+//            parent.getCommentReply().add(comment);
+//            commentRepo.save(parent);
+
+            Set<Comment> cmtrep = parent.getCommentReply();// cmtRep name ko set ma id through get gareko id ko replyObj storre.
+            cmtrep.add(comment);
+            commentRepo.save(parent);
+
+        } else {
+            Blog blog = blogService.getSingleBlog(blogId);
+            List<Comment> commentList = blog.getComment();
+            commentList.add(comment);
+            blogService.saveBlog(blog);
+        }
 
         return convertEntityToDto(cmt);
     }
 
+    @Override
+    public Comment saveCmt(Comment comment) {
+        return commentRepo.save(comment);
+    }
 
     @Override
-    public List<CommentDTO> getAllComments(){
+    public List<CommentDTO> getAllComments() {
         return getAllComment();
     }
 
 
     @Override
-    public CommentDTO updateComment(int updateId, Comment updateComment){
+    public CommentDTO updateComment(int updateId, Comment updateComment) {
 
         Optional<Comment> optionalCmt = commentRepo.findById(updateId);
         Comment comment = optionalCmt.orElse(null);
-        if(comment!=null){
+        if (comment != null) {
             comment.setComments(updateComment.getComments());
             commentRepo.save(comment);
         }
@@ -77,12 +103,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
-
     @Override
-    public Comment deleteComment(int commentId){
-        Optional<Comment> optionalComment =commentRepo.findById(commentId);
+    public Comment deleteComment(int commentId) {
+        Optional<Comment> optionalComment = commentRepo.findById(commentId);
         Comment commentDelete = optionalComment.orElse(null);
-        if(commentDelete != null){
+        if (commentDelete != null) {
             commentRepo.delete(commentDelete);
         }
         return commentDelete;
@@ -90,11 +115,21 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
-    public CommentDTO getCommentById(int commentId){
+    public CommentDTO getCommentById(int commentId) {
         Optional<Comment> optionalComment = commentRepo.findById(commentId);
         Comment comment = optionalComment.orElse(null);
-        return  convertEntityToDto(comment);
+        return convertEntityToDto(comment);
     }
+
+
+    @Override
+    public Comment getSingleComment(int commentId) {
+
+        Optional<Comment> optionalComment = commentRepo.findById(commentId);
+        Comment cmtById = optionalComment.orElse(null);
+        return cmtById;
+    }
+
 
 }
 

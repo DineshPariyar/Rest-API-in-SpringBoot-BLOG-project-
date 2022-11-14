@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> getAllUser() {
+
         return getUsers();
     }
 

@@ -115,14 +115,15 @@ public class BlogServiceImpl implements BlogService{
         return convertEntityToDto(currentBlog);
     }
 
-
-
     @Override
-    public Blog deleteBlog(int blogId){
-        Blog currentBlog = blogRepo.findByBlogId(blogId);
-        blogRepo.delete(currentBlog);
-        return currentBlog;
+    public Blog deleteBlog(int blogId) {
+
+        Blog blog =getSingleBlog(blogId);
+        blogRepo.delete(blog);
+        return blog;
+
     }
+
 
     @Override
     public Blog getSingleBlog(int blogId){

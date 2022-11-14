@@ -4,6 +4,8 @@ import com.bloggenerate.demo.Entity.Address;
 
 public interface AddressService {
 
-     Address saveAddress(Address address);
-    
+          Address saveAddress(Address address);
+
+
+
 }
