@@ -17,7 +17,9 @@ public class recursionFactorial {
             if (num == 1 || num == 0) {
                 return num;
             } else {
+                System.out.println("Hello");
                 return (num * sumOfFactorial(num - 1));
+
             }
         }
 
